@@ -25,7 +25,8 @@ func (app *application) errorResponse(w http.ResponseWriter, r *http.Request, st
 	}
 }
 
-// serverErrorResponse logs a generic server error message and sends it to the client.
+// serverErrorResponse logs a generic server error message and sends a
+// 500 HTTP status code response to the client.
 func (app *application) serverErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
 	app.logError(r, err)
 	message := "the server encountered a problem and could not process your request"
