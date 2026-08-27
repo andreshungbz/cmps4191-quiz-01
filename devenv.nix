@@ -15,9 +15,11 @@ in
   # https://devenv.sh/packages/
   packages = with pkgs; [
     curl
+    gawk
     git
     gnumake
     go-migrate-pg
+    jq
   ];
 
   # https://devenv.sh/languages/
