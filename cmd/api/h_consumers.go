@@ -9,7 +9,7 @@ import (
 	"github.com/andreshungbz/cmps4191-quiz-01/internal/validator"
 )
 
-// createConsumerHandler creates a new consumer in the database from JSON input.
+// createConsumerHandler creates a new consumer in the database.
 func (app *application) createConsumerHandler(w http.ResponseWriter, r *http.Request) {
 	// Attempt to read valid JSON input from the request and store it in an interim struct,
 	// returning a 400 response if the JSON is invalid.
