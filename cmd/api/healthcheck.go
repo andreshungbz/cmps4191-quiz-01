@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-// healthcheckHandler returns JSON containing the status of the API server.
+// healthcheckHandler reports on the status of the API server.
 func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
 	env := envelope{
 		"status": "available",
