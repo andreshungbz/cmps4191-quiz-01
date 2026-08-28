@@ -15,6 +15,13 @@ type ReportPayload struct {
 	To   time.Time `json:"to"`
 }
 
+// Job represents a record in the jobs table of the database.
+//
+// Q11: The fields of the struct mirrors the columns of the jobs table in the database.
+//
+// Q12: Some fields are pointers because they can be NULL in the database. A missing timestamp
+// or error message would mean would mean those values are NULL in the database,
+// and thus should be represented as nil in Go.
 type Job struct {
 	ID           string          `json:"-"`
 	PublicID     string          `json:"id"`
@@ -34,14 +41,21 @@ type JobModel struct {
 }
 
 func (m JobModel) Insert(job *Job) error {
+	// Q13: The purpose of doing json.Marshal(job.Payload) before inserting the job into the database
+	// is because the database expects the payload to be in JSON format, so we need to serialize the
+	// Go struct into JSON before inserting it.
 	payload, err := json.Marshal(job.Payload)
 	if err != nil {
 		return err
 	}
+
+	// Q15: RETURNING in the query populates the Go job struct immediatly after the insert by
+	// immediately calling Scan on the returned row.
 	query := `INSERT INTO jobs (consumer_id, job_type, payload)
 		VALUES ($1, $2, $3) RETURNING id, public_id, status, created_at`
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+
 	err = m.DB.QueryRowContext(ctx, query, job.ConsumerID, job.JobType, payload).Scan(
 		&job.ID, &job.PublicID, &job.Status, &job.CreatedAt,
 	)

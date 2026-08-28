@@ -29,12 +29,18 @@ func (app *application) serve() error {
 	shutdownError := make(chan error)
 	go func() {
 		// Use a single buffered channel that blocks until a signal is received.
+		//
+		// Q44: Once a SIGINT is received by the application, the goroutine no longer blocks on the
+		// quit os.Signal channel and initiates the shutdown process.
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		s := <-quit // Block here until signal is caught.
 		app.logger.Info("shutting down server due to caught signal", "signal", s.String())
 
 		// Allow HTTP server to close any remaining connections.
+		//
+		// Q45: srv.Shutdown(ctx) completes any ongoing HTTP requests before waiting
+		// for the background tasks to finish.
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 		err := srv.Shutdown(ctx)
@@ -46,6 +52,9 @@ func (app *application) serve() error {
 		app.logger.Info("completing background tasks", "addr", srv.Addr)
 
 		// Report worker goroutine
+		//
+		// Q46: app.workerCancel() is executed before app.wg.Wait() so that the report worker goroutine
+		// can exit gracefully, allowing the WaitGroup to unblock and the application to finish shutting down.
 		if app.workerCancel != nil {
 			app.workerCancel()
 		}

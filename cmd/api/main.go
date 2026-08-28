@@ -95,6 +95,16 @@ func main() {
 	}
 
 	// Start the report worker (in a separate goroutine) with a cancellable context.
+	//
+	// Q23: This is the point where the worker is started. It must start once for the application rather
+	// than once per HTTP request, as it is a background process that runs continuously to process queued jobs.
+	// Starting it per request would lead to multiple workers running concurrently, which is not the intended behavior.
+	//
+	// Q24: context.WithCancel with context.Background is used to create a cancellable context for the report worker.
+	// This allows the worker to be stopped gracefully when the application is shutting down. workerCtx is the context
+	// that will be passed to the worker, and cancelWorker is a function that can be called to cancel the context,
+	// signaling the worker to stop. Lastly, app.workerCancel represents the cancel function for the report worker,
+	// which is stored in the application struct so that it can be called later.
 	workerCtx, cancelWorker := context.WithCancel(context.Background())
 	app.workerCancel = cancelWorker
 	defer cancelWorker()
