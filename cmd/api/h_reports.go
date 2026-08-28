@@ -43,6 +43,14 @@ func (app *application) createReportHandler(w http.ResponseWriter, r *http.Reque
 	// A data.ErrRecordNotFound error can occur if the provided consumer_id does not exist in
 	// the database, as it is a foreign key constraint on the jobs table.
 	//
+	// Q01: A job is created instead of report generation happening here, which is the where
+	// the initial HTTP request is handled. If the report were generated here, it can cause problems
+	// with the HTTP request or response timing out, as it can potentially take a long time.
+	//
+	// Q02: This delegation of report generation to a job that is handled by a background worker
+	// satisfies the "Acknowledge without waiting for report completion" requirement, as the
+	// initial HTTP request is acknowledged immediately.
+	//
 	// NOTE: This error handling's form is different compared to that in createConsumerHandler,
 	// the latter which uses a switch construct. However, they are both functionally the same.
 	job := &data.Job{
@@ -60,11 +68,19 @@ func (app *application) createReportHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Add a Location header to the response with the new job's public ID (UUIDv4).
+	//
+	// Q07: This is so that the client can locate the job later.
+	//
+	// Q08: The public ID is used instead of the internal database ID because UUIDv4 does not 
+	// include a timestamp component, which could be a security risk as jobs are frequently polled.
 	statusURL := fmt.Sprintf("/v1/jobs/%s", job.PublicID)
 	headers := make(http.Header)
 	headers.Set("Location", statusURL)
 
 	// Send a JSON response of the newly created job, handling any errors.
+	//
+	// Q05: The HTTP 202 Accepted status code promises that the job has been accepted for processing,
+	// but does not guarantee that the job will be completed successfully.
 	response := envelope{"job_id": job.PublicID, "status": job.Status, "status_url": statusURL}
 	if err := app.writeJSON(w, http.StatusAccepted, response, headers); err != nil {
 		app.serverErrorResponse(w, r, err)
