@@ -53,7 +53,7 @@ func (app *application) createReportHandler(w http.ResponseWriter, r *http.Reque
 	// Q02: This delegation of report generation to a job that is handled by a background worker
 	// satisfies the "Acknowledge without waiting for report completion" requirement, as the
 	// initial HTTP request is acknowledged immediately.
-	
+
 	job := &data.Job{
 		ConsumerID: input.ConsumerID,
 		JobType:    "consumer_activity_report",
@@ -72,7 +72,7 @@ func (app *application) createReportHandler(w http.ResponseWriter, r *http.Reque
 	//
 	// Q07: This is so that the client can locate the job later.
 	//
-	// Q08: The public ID is used instead of the internal database ID because UUIDv4 does not 
+	// Q08: The public ID is used instead of the internal database ID because UUIDv4 does not
 	// include a timestamp component, which could be a security risk as jobs are frequently polled.
 	statusURL := fmt.Sprintf("/v1/jobs/%s", job.PublicID)
 	headers := make(http.Header)

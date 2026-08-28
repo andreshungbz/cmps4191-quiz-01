@@ -31,7 +31,7 @@ func (app *application) routes() http.Handler {
 	// NOTE: Path slug differs from the starter code "/v1/jobs/{id}" because of the
 	// github.com/julienschmidt/httprouter package being used.
 	//
-	// Q09: This GET endpoint differs from the POST endpoint in that it retrieves a job 
+	// Q09: This GET endpoint differs from the POST endpoint in that it retrieves a job
 	// from the database by its public ID, instead of creating a new job.
 	router.HandlerFunc(http.MethodGet, "/v1/jobs/:id", app.getJobHandler)
 
