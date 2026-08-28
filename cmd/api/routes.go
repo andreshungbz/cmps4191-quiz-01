@@ -6,34 +6,33 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-// routes returns the HTTP router configured with all handlers, route-specific middleware,
-// and global middleware.
+// routes returns the HTTP router configured with all handlers, route-specific middleware, and global middleware.
 func (app *application) routes() http.Handler {
+	// NOTE: The github.com/julienschmidt/httprouter package was used instead of mux := http.NewServeMux()
+	// as a different implementation. However, the application architecture remains the same.
 	router := httprouter.New()
 
 	// BACKEND
 
-	// Defined handlers for 404 and 205 status code
+	// Standard routes
 	router.NotFound = http.HandlerFunc(app.notFoundResponse)
 	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
-
-	// Healthcheck route
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
 
 	// DATABASE SCHEMA ROUTES
 
-	// consumer routes
+	// Consumer routes
 	router.HandlerFunc(http.MethodPost, "/v1/consumers", app.createConsumerHandler)
 
-	// report routes
+	// Report routes
 	router.HandlerFunc(http.MethodPost, "/v1/reports", app.createReportHandler)
 
-	// job routes
+	// Job routes
+	// NOTE: Path slug differs from the starter code "/v1/jobs/{id}" because of the
+	// github.com/julienschmidt/httprouter package being used.
 	router.HandlerFunc(http.MethodGet, "/v1/jobs/:id", app.getJobHandler)
 
 	// GLOBAL MIDDLEWARE
 
-	return app.requestLogger(
-		router,
-	)
+	return app.requestLogger(router)
 }
