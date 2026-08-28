@@ -82,6 +82,9 @@ func (app *application) createReportHandler(w http.ResponseWriter, r *http.Reque
 	//
 	// Q05: The HTTP 202 Accepted status code promises that the job has been accepted for processing,
 	// but does not guarantee that the job will be completed successfully.
+	//
+	// Q42: Since the reponse from the POST request is independent of the report generation,
+	// it can succeed even if the background job later fails.
 	response := envelope{"job_id": job.PublicID, "status": job.Status, "status_url": statusURL}
 	if err := app.writeJSON(w, http.StatusAccepted, response, headers); err != nil {
 		app.serverErrorResponse(w, r, err)

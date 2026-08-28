@@ -122,6 +122,7 @@ func (m JobModel) ClaimNext(ctx context.Context) (*Job, error) {
 }
 
 func (m JobModel) MarkCompleted(ctx context.Context, id string, result []byte) error {
+	// Q41: MarkCompleted updates the status, result, and completed_at columns of a jobs table record.
 	_, err := m.DB.ExecContext(ctx,
 		`UPDATE jobs SET status = 'completed', result = $2, completed_at = now() WHERE id = $1`,
 		id, result)
@@ -129,6 +130,7 @@ func (m JobModel) MarkCompleted(ctx context.Context, id string, result []byte) e
 }
 
 func (m JobModel) MarkFailed(ctx context.Context, id, message string) error {
+	// Q41: MarkFailed updates the status, error_message, and completed_at columns of a jobs table record.
 	_, err := m.DB.ExecContext(ctx,
 		`UPDATE jobs SET status = 'failed', error_message = $2, completed_at = now() WHERE id = $1`,
 		id, message)
