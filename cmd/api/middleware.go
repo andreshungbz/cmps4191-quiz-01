@@ -7,8 +7,7 @@ import (
 	"strings"
 )
 
-// recoverPanic ensures that in the case of a panic, a Connection header of
-// 'close' is sent to the client.
+// recoverPanic sends a connection close header if a panic occurs.
 func (app *application) recoverPanic(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
@@ -46,17 +45,17 @@ func (gzw gzipResponseWriter) Write(b []byte) (int, error) {
 // gzip compress responses if the client accepts the gzip encoding in its HTTP request.
 func (app *application) gzip(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// check that the client set the Accept-Encoding header to "gzip"
+		// Check that the client set the Accept-Encoding header to "gzip".
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		// set Content-Encoding and account for caching
+		// Set Content-Encoding and account for caching.
 		w.Header().Add("Content-Encoding", "gzip")
 		w.Header().Add("Vary", "Accept-Encoding")
 
-		// create a new *gzip.Writer and gzipResponseWriter
+		// Create a new *gzip.Writer and gzipResponseWriter.
 		gz := gzip.NewWriter(w)
 		defer gz.Close()
 		gzw := gzipResponseWriter{
@@ -64,7 +63,7 @@ func (app *application) gzip(next http.Handler) http.Handler {
 			writer:         gz,
 		}
 
-		// use the gzipResponseWriter in the next handler
+		// Use the gzipResponseWriter in the next handler.
 		next.ServeHTTP(gzw, r)
 	})
 }
