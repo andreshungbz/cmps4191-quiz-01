@@ -44,6 +44,9 @@ func (app *application) startReportWorker(ctx context.Context) {
 				app.logger.Info("report worker stopped")
 				return
 			case <-ticker.C:
+				// Q22: If no queued jobs are available, the sql.ErrNoRows error ultimately received
+				// here is not considered an actual worker failure, and therefore the log below does
+				// not execute and the worker continues to poll for the next job at the configured interval.
 				err := app.processNextReportJob(ctx)
 				if err != nil && !errors.Is(err, sql.ErrNoRows) && !errors.Is(err, context.Canceled) {
 					app.logger.Error("report worker failed", "error", err)
