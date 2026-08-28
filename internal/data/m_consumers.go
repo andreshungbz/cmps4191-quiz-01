@@ -10,10 +10,6 @@ import (
 	"github.com/lib/pq"
 )
 
-var ErrDuplicateEmail = errors.New("duplicate email address")
-var ErrRecordNotFound = errors.New("no record found")
-var ErrEditConflict = errors.New("edit conflict")
-
 func ValidateConsumer(v *validator.Validator, consumer *Consumer) {
 	v.Check(consumer.Name != "", "name", "must be provided")
 	v.Check(len(consumer.Name) <= 200, "name", "must not exceed 200 characters")
