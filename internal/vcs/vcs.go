@@ -1,4 +1,3 @@
-// Package vcs contains functions for reading the running program's build information.
 package vcs
 
 import "runtime/debug"

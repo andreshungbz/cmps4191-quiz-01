@@ -5,13 +5,11 @@ import (
 )
 
 var (
-	// https://html.spec.whatwg.org/#valid-e-mail-address
+	// Email address regular expression from https://html.spec.whatwg.org/#valid-e-mail-address
 	EmailRX = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 )
 
-// Validator holds multiple errors for validating JSON values to enforce
-// business rules. These errors are typically returned to the client as a
-// JSON response.
+// Validator holds multiple errors for validating values in order to enforce business rules.
 type Validator struct {
 	Errors map[string]string
 }
@@ -33,8 +31,7 @@ func (v *Validator) AddError(key, message string) {
 	}
 }
 
-// Check evaluates a boolean expression, recording an error in Validator
-// if it evaluates to false.
+// Check evaluates a boolean expression, recording an error in Validator if it evaluates to false.
 func (v *Validator) Check(ok bool, key, message string) {
 	if !ok {
 		v.AddError(key, message)
