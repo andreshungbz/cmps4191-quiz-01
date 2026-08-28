@@ -43,6 +43,9 @@ func (app *application) createReportHandler(w http.ResponseWriter, r *http.Reque
 	// A data.ErrRecordNotFound error can occur if the provided consumer_id does not exist in
 	// the database, as it is a foreign key constraint on the jobs table.
 	//
+	// NOTE: This error handling's form is different compared to that in createConsumerHandler,
+	// the latter which uses a switch construct. However, they are both functionally the same.
+	//
 	// Q01: A job is created instead of report generation happening here, which is the where
 	// the initial HTTP request is handled. If the report were generated here, it can cause problems
 	// with the HTTP request or response timing out, as it can potentially take a long time.
@@ -50,9 +53,7 @@ func (app *application) createReportHandler(w http.ResponseWriter, r *http.Reque
 	// Q02: This delegation of report generation to a job that is handled by a background worker
 	// satisfies the "Acknowledge without waiting for report completion" requirement, as the
 	// initial HTTP request is acknowledged immediately.
-	//
-	// NOTE: This error handling's form is different compared to that in createConsumerHandler,
-	// the latter which uses a switch construct. However, they are both functionally the same.
+	
 	job := &data.Job{
 		ConsumerID: input.ConsumerID,
 		JobType:    "consumer_activity_report",
