@@ -9,27 +9,26 @@ import (
 	"strings"
 )
 
-// envelope is used to enclose a JSON response.
+// envelope encloses a JSON response.
 type envelope map[string]any
 
-// writeJSON attempts to encode data into JSON, applies given HTTP headers,
-// and writes to the HTTP response with the given HTTP status code.
+// writeJSON encodes data into a JSON response, applies HTTP headers, and writes the HTTP status code.
 func (app *application) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
-	// encoding data into JSON
+	// Encode the data into JSON
 	js, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
 		return err
 	}
 	js = append(js, '\n')
 
-	// apply HTTP headers
+	// Apply HTTP headers
 	for key, values := range headers {
 		for _, value := range values {
 			w.Header().Add(key, value)
 		}
 	}
 
-	// set Content-Type and write to HTTP response
+	// Set Content-Type and write to HTTP response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write(js)
@@ -37,18 +36,14 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 	return nil
 }
 
-// readJSON attempts to decode JSON from the client, writing to a destination object.
-// It checks for errors in the JSON input form and errors in applying the appropriate
-// types to the destination.
+// readJSON decodes JSON input, writing it to a destination object.
 func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any) error {
-	// set 1MB limit for HTTP request body
+	// Set a reasonable 1MB limit for HTTP request body
 	r.Body = http.MaxBytesReader(w, r.Body, 1_048_576)
 
-	// create and configure JSON decoder
+	// Decode JSON and check for errors
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
-
-	// decode and check for errors
 	err := dec.Decode(dst)
 	if err != nil {
 		var syntaxError *json.SyntaxError
@@ -92,7 +87,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any
 		}
 	}
 
-	// check for extraneous input
+	// Check for extraneous input
 	err = dec.Decode(&struct{}{})
 	if !errors.Is(err, io.EOF) {
 		return errors.New("Body must only contain a single JSON value")
