@@ -62,7 +62,7 @@ func main() {
 	displayVersion := flag.Bool("version", false, "Display program version")
 
 	// Report worker flags
-	flag.DurationVar(&cfg.reportDelay, "report-delay", 0, "Artificial report-generation delay")                            
+	flag.DurationVar(&cfg.reportDelay, "report-delay", 0, "Artificial report-generation delay")
 	flag.DurationVar(&cfg.workerPollInterval, "worker-poll-interval", 250*time.Millisecond, "Worker queue-check interval")
 
 	flag.Parse()
