@@ -1,4 +1,4 @@
-# CMPS4191 Quiz 1
+# CMPS4191 Quiz 2
 
 ## Asynchronous Job + Worker + HTTP 202
 
