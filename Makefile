@@ -145,7 +145,7 @@ demo/app:
 		-db-dsn=${GATEKEEPER_DB_DSN} \
 		-report-delay=3s
 
-.PHONY: demo/get-completed
-demo/get-completed:
+.PHONY: demo/get-request-job
+demo/get-request-job:
 	curl --include --silent \
 		http://localhost:${PORT}/v1/jobs/placeholder
