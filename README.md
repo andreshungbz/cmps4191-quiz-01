@@ -11,7 +11,7 @@
 
 ## Deliverable Links
 
-- B) Slides: [TODO]()
+- B) Slides: [https://docs.google.com/presentation/d/1884qi9FXfv65lyBc8eOx94k_JUAKvcrWkMm7Zqt5ZAQ/edit?usp=sharing](https://docs.google.com/presentation/d/1884qi9FXfv65lyBc8eOx94k_JUAKvcrWkMm7Zqt5ZAQ/edit?usp=sharing)
 - C) YouTube: [TODO]()
 
 ## Running the Application
