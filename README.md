@@ -12,7 +12,7 @@
 ## Deliverable Links
 
 - B) Slides: [https://docs.google.com/presentation/d/1884qi9FXfv65lyBc8eOx94k_JUAKvcrWkMm7Zqt5ZAQ/edit?usp=sharing](https://docs.google.com/presentation/d/1884qi9FXfv65lyBc8eOx94k_JUAKvcrWkMm7Zqt5ZAQ/edit?usp=sharing)
-- C) YouTube: [TODO]()
+- C) YouTube Demo: [https://youtu.be/GYW6C-\_avok](https://youtu.be/GYW6C-_avok)
 
 ## Running the Application
 
