@@ -1,6 +1,11 @@
 -- Filename: 000004_create_jobs_table.up.sql
 BEGIN;
 
+/*
+Q04: The asynchronous architecture requires a persistent job resource instead of simpley returning immediately
+because it allows the job processing to be delegated elsewhere. By persisting the job in the database, 
+the background worker can pick it up and process it independently of the request lifecycle.
+ */
 CREATE TABLE IF NOT EXISTS
     jobs (
         /*

@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+// Q32: The combination of time.NewTimer in processNextReportJob, and timer.C and ctx.Done()
+// in the select statement in startReportWorker together accomplishes the implementation for
+// the artificial delay. The timer is created with the configured reportDelay duration,
+// and the select statement waits for either the timer to expire or the context to be canceled.
+// If the timer expires first, the worker proceeds to generate the report, and if the context
+// is canceled first, the worker stops processing.
+
 // startReportWorker starts a background goroutine that polls the jobs table for new report jobs to process.
 func (app *application) startReportWorker(ctx context.Context) {
 	// Q25: The WaitGroup task counter is incremented before starting the goroutine to ensure that
@@ -24,6 +31,10 @@ func (app *application) startReportWorker(ctx context.Context) {
 
 		// Q27: The ticker is a Ticker struct that contains a channel which sends the current time
 		// on the channel every configured interval duration, which is currently 250ms.
+		//
+		// Q29: The worker polling interval affects the delay between job creation and job start
+		// by determining how frequently the worker checks for new jobs. A shorter interval results
+		// in quicker job processing, while a longer interval may introduce delays.
 		//
 		// Q30: defer ticker.Stop() is appropriate when the worker exits because it will prevent
 		// additional ticks from being sent to the channel, which would otherwise cause a memory leak.
@@ -71,6 +82,10 @@ func (app *application) processNextReportJob(ctx context.Context) error {
 	// Q31: Here is where reportDelay is being applied. It has to occur in this function,
 	// which is called by the goroutine launched by startReportWorker rather than in the POST handler,
 	// because otherwise the HTTP request would be synchronously blocked for the duration of the delay.
+	//
+	// Q34: Increasing the replortDelay affects completion time more strongly than acknowledgment
+	// time because the acknowledgment time is independent of the report generation, while the
+	// completion time is directly affected by the delay.
 	if app.config.reportDelay > 0 {
 		timer := time.NewTimer(app.config.reportDelay)
 		defer timer.Stop()

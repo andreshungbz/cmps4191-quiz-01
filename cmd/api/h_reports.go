@@ -53,7 +53,15 @@ func (app *application) createReportHandler(w http.ResponseWriter, r *http.Reque
 	// Q02: This delegation of report generation to a job that is handled by a background worker
 	// satisfies the "Acknowledge without waiting for report completion" requirement, as the
 	// initial HTTP request is acknowledged immediately.
-
+	//
+	// Q03: Creating a job instead of generating a report her essentially separates the request
+	// lifetime from the work lifetime. At the end of this handler is where the request lifetime
+	// ends, and the work lifetime ends when the background worker completes the job.
+	//
+	// Q14: In job creation, the consumer ID, the from and to timestamps, and the job type are
+	// are supplied by the application. From and to form the payload of the job. The database
+	// will generate the new job's internal ID and public ID, while defaulting the status and
+	// creation timestamp. The set of the columns start empty or null.
 	job := &data.Job{
 		ConsumerID: input.ConsumerID,
 		JobType:    "consumer_activity_report",
@@ -83,6 +91,10 @@ func (app *application) createReportHandler(w http.ResponseWriter, r *http.Reque
 	// Q05: The HTTP 202 Accepted status code promises that the job has been accepted for processing,
 	// but does not guarantee that the job will be completed successfully.
 	//
+	// Q06: 202 Accepted does not guarantee that the report has finished of that is will definitely
+	// succeed because the report generation is delegated to a background worker, which can fail for
+	// a variety of different reasons.
+	//
 	// Q42: Since the reponse from the POST request is independent of the report generation,
 	// it can succeed even if the background job later fails.
 	response := envelope{"job_id": job.PublicID, "status": job.Status, "status_url": statusURL}
@@ -100,6 +112,11 @@ func (app *application) getJobHandler(w http.ResponseWriter, r *http.Request) {
 	// NOTE: The github.com/julienschmidt/httprouter package is being used here to extract
 	// the public ID from the URL instead of the r.PathValue("id") in the starter code.
 	// The application architecture remains the same, only the implementation of the router is different.
+	//
+	// Q43: The getJobHandler, which is configured for the GET /v1/jobs/{id} endpoint,
+	// helps to diagnose a failed job by implementing error handling. Logs and error messages
+	// are shown to the client in case of a failed job. Demonstrated here are the app.notFoundResponse
+	// for a job that does not exist, and the app.serverErrorResponse for miscellaneous errors.
 	job, err := app.models.Jobs.GetByPublicID((httprouter.ParamsFromContext(r.Context())).ByName("id"))
 	if err != nil {
 		if errors.Is(err, data.ErrRecordNotFound) {

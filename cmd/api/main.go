@@ -105,6 +105,11 @@ func main() {
 	// that will be passed to the worker, and cancelWorker is a function that can be called to cancel the context,
 	// signaling the worker to stop. Lastly, app.workerCancel represents the cancel function for the report worker,
 	// which is stored in the application struct so that it can be called later.
+	//
+	// Q47: Deferring cancelWorker in main alone does not prevent shutdown from hanging because
+	// the worker goroutine may still be running and waiting for the next tick from the ticker.
+	// By deferring cancelWorker, we ensure that the worker is signaled to stop when the main function exits,
+	// allowing it to exit gracefully and preventing the shutdown from hanging.
 	workerCtx, cancelWorker := context.WithCancel(context.Background())
 	app.workerCancel = cancelWorker
 	defer cancelWorker()

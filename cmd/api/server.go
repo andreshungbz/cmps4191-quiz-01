@@ -59,6 +59,9 @@ func (app *application) serve() error {
 			app.workerCancel()
 		}
 
+		// Q48: The app.wg.Wait() call here, along with the cancellation performed above and the
+		// app.wg.Done() call in the report worker goroutine, fit together to ensure that the application
+		// does not exit until the report worker has finished processing any ongoing jobs and has exited gracefully.
 		app.wg.Wait() // Block here until all background tasks are finished.
 		shutdownError <- nil
 	}()
