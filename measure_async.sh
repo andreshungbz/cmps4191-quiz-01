@@ -9,16 +9,35 @@ api='http://localhost:4000/v1'
 start_ns=$(date +%s%N)
 
 # Submit HTTP POST request to generate a report.
-submit=$(curl --silent --show-error \
+submit=$(curl --include --silent \
   --write-out $'\n%{time_total}' \
   --request POST \
   --header 'Content-Type: application/json' \
   --data @request.json \
   "$api/reports")
 
-# Extract ack_time value, reponse body, and the job_id from the response.
+# Extract total time from the very last line
 ack_time=${submit##*$'\n'}
-body=${submit%$'\n'*}
+
+# Remove the timing metric line from the end
+raw_response=${submit%$'\n'*}
+
+# Separate HTTP headers and JSON body (HTTP headers end with a blank line \r\n\r\n)
+headers=$(printf '%s' "$raw_response" | sed -n '1,/^\r\{0,1\}$/p')
+body=$(printf '%s' "$raw_response" | sed '1,/^\r\{0,1\}$/d')
+
+# Print the initial response header and body so you can see them
+echo "===================================================================================="
+echo "Response Headers"
+echo "===================================================================================="
+echo "$headers"
+echo "===================================================================================="
+echo "Response Body"
+echo "===================================================================================="
+echo "$body"
+echo "===================================================================================="
+
+# Extract the job_id safely from the cleaned body
 job_id=$(printf '%s' "$body" | jq -r '.job_id')
 
 # Continuously poll and count the number of polls until the job is completed or failed.

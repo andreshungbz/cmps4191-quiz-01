@@ -134,3 +134,18 @@ test/report-delay/12s:
 	go run ./cmd/api \
 		-db-dsn=${GATEKEEPER_DB_DSN} \
 		-report-delay=12s
+
+# ==================================================================================== #
+# DEMO
+# ==================================================================================== #
+
+.PHONY: demo/app
+demo/app:
+	go run ./cmd/api \
+		-db-dsn=${GATEKEEPER_DB_DSN} \
+		-report-delay=3s
+
+.PHONY: demo/get-completed
+demo/get-completed:
+	curl --include --silent \
+		http://localhost:${PORT}/v1/jobs/placeholder
